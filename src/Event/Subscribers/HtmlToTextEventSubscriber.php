@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DMT\MailService\EventSubscribers;
+namespace DMT\MailService\Event;
 
 use DMT\MailService\Model\EmailMessage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
