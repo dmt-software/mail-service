@@ -17,7 +17,7 @@ use Twig\Environment;
 
 class MailServiceProvider implements ServiceProviderInterface
 {
-    public function __construct(private array $config = [])
+    public function __construct(private ?string $mailerDSN = null)
     {
     }
 
@@ -26,7 +26,7 @@ class MailServiceProvider implements ServiceProviderInterface
         $container->set(
             id: MailAdapterInterface::class,
             value: fn() => new SymfonyMailAdapter(
-                new Mailer(Transport::fromDsn($this->config['dsn'] ?? 'null://null')),
+                new Mailer(Transport::fromDsn($this->mailerDSN ?? 'null://null')),
             )
         );
 

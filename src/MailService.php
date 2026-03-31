@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace DMT\MailService;
 
 use DMT\MailService\Adapters\MailAdapterInterface;
+use DMT\MailService\Exceptions\InvalidMessageException;
+use DMT\MailService\Exceptions\SendMessageException;
 use DMT\MailService\Model\EmailMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -16,11 +18,16 @@ final readonly class MailService
     ) {
     }
 
+    /**
+     * Send an email message.
+     *
+     * @throws InvalidMessageException
+     * @throws SendMessageException
+     */
     public function send(EmailMessage $emailMessage): void
     {
-        /** @var EmailMessage $message */
-        $message = $this->eventDispatcher->dispatch($emailMessage);
+        $this->eventDispatcher->dispatch($emailMessage);
 
-        $this->adapter->send($message);
+        $this->adapter->send($emailMessage);
     }
 }

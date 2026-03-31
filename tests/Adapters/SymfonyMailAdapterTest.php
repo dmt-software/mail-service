@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace DMT\MailService\Tests\Adapters;
 
 use DMT\MailService\Adapters\SymfonyMailAdapter;
+use DMT\MailService\Exceptions\InvalidMessageException;
+use DMT\MailService\Exceptions\SendMessageException;
 use DMT\MailService\Model\EmailAddress;
 use DMT\MailService\Model\EmailMessage;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -17,7 +18,7 @@ final class SymfonyMailAdapterTest extends TestCase
 {
     public function testMissingRecipient(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidMessageException::class);
         $this->expectExceptionMessage('Mail must contain at least one recipient.');
 
         $mailer = $this->createMock(MailerInterface::class);
@@ -35,7 +36,7 @@ final class SymfonyMailAdapterTest extends TestCase
 
     public function testMissingMailContent(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidMessageException::class);
         $this->expectExceptionMessage('Mail must contain either HTML or text content.');
 
         $mailer = $this->createMock(MailerInterface::class);
@@ -78,12 +79,12 @@ final class SymfonyMailAdapterTest extends TestCase
 
     public function testFailSendingEmail(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(SendMessageException::class);
         $this->expectExceptionMessage('Transport failed');
 
         $mailer = $this->createMock(MailerInterface::class);
         $mailer
-            ->expects(static::once())
+            ->expects($this->once())
             ->method('send')
             ->willThrowException(new TransportException('Transport failed'));
 

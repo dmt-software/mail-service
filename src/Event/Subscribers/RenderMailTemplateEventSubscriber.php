@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace DMT\MailService\Event\Subscribers;
 
+use DMT\MailService\Exceptions\InvalidMessageException;
 use DMT\MailService\Model\TemplatedMessage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Twig\Environment;
+use Twig\Error\Error;
 
 class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
 {
@@ -24,22 +26,32 @@ class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
     {
     }
 
+    /**
+     * @throws InvalidMessageException
+     */
     public function renderTemplate(TemplatedMessage $mail): void
     {
-        $template = $this->twig->load($mail->template);
+        try {
+            $template = $this->twig->load($mail->template);
 
-        if (!$template->hasBlock('html_part')) {
-            $mail->html = $template->render($mail->context);
+            if (!$template->hasBlock('html_part')) {
+                $mail->html = $template->render($mail->context);
 
-            return;
-        }
+                return;
+            }
 
-        if ($template->hasBlock('html_part')) {
-            $mail->html = $template->renderBlock('html_part', $mail->context);
-        }
+            if ($template->hasBlock('html_part')) {
+                $mail->html = $template->renderBlock('html_part', $mail->context);
+            }
 
-        if ($template->hasBlock('text_part')) {
-            $mail->text = $template->renderBlock('text_part', $mail->context);
+            if ($template->hasBlock('text_part')) {
+                $mail->text = $template->renderBlock('text_part', $mail->context);
+            }
+        } catch (Error $exception) {
+            throw new InvalidMessageException(
+                'Could not render template',
+                previous: $exception
+            );
         }
     }
 }
