@@ -1,0 +1,36 @@
+{
+    "name": "dmt-software/mail-service",
+    "description": "Mail sender service",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bas de Mes",
+            "email": "bas@dmt-software.nl"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "dmt-software/di-plug": "*",
+        "psr/event-dispatcher": "^1.0",
+        "twig/twig": "*",
+        "symfony/event-dispatcher": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11",
+        "symfony/mailer": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DMT\\MailService\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DMT\\Test\\MailService\\": "tests/"
+        }
+    },
+    "suggest": {
+        "symfony/mailer": ">=8.0"
+    }
+}
