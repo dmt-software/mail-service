@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DMT\MailService\Event;
+namespace DMT\MailService\Event\Subscribers;
 
 use DMT\MailService\Model\TemplatedMessage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -28,18 +28,18 @@ class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
     {
         $template = $this->twig->load($mail->template);
 
-        if (!$template->hasBlock('html-part')) {
+        if (!$template->hasBlock('html_part')) {
             $mail->html = $template->render($mail->context);
 
             return;
         }
 
-        if ($template->hasBlock('html-part')) {
-            $mail->html = $template->renderBlock('html-part', $mail->context);
+        if ($template->hasBlock('html_part')) {
+            $mail->html = $template->renderBlock('html_part', $mail->context);
         }
 
-        if ($template->hasBlock('text-part')) {
-            $mail->text = $template->renderBlock('text-part', $mail->context);
+        if ($template->hasBlock('text_part')) {
+            $mail->text = $template->renderBlock('text_part', $mail->context);
         }
     }
 }

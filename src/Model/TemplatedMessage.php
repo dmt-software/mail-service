@@ -7,12 +7,12 @@ namespace DMT\MailService\Model;
 class TemplatedMessage extends EmailMessage
 {
     public function __construct(
-        string                 $subject,
+        string $subject,
         public readonly string $template,
-        ?EmailAddress          $to = null,
-        ?EmailAddress          $from = null,
-        ?EmailAddress          $replyTo = null,
-        public array           $context = [],
+        ?EmailAddress $to = null,
+        ?EmailAddress $from = null,
+        ?EmailAddress $replyTo = null,
+        public array $context = [],
     ) {
         parent::__construct(
             subject: $subject,
