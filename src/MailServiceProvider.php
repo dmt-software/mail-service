@@ -19,14 +19,12 @@ class MailServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $container): void
     {
-        if (!$container->has(id: MailAdapterInterface::class)) {
-            $container->set(
-                id: MailAdapterInterface::class,
-                value: fn() => new SymfonyMailAdapter(
-                    new Mailer(Transport::fromDsn($_ENV['MAILER_DSN'] ?? 'null://null')),
-                )
-            );
-        }
+        $container->set(
+            id: MailAdapterInterface::class,
+            value: fn() => new SymfonyMailAdapter(
+                new Mailer(Transport::fromDsn($_ENV['MAILER_DSN'] ?? 'null://null')),
+            )
+        );
 
         $container->set(
             id: HtmlToTextEventSubscriber::class,
