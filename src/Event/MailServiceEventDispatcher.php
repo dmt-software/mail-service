@@ -7,7 +7,7 @@ namespace DMT\MailService\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class MailServiceEventDispatcher extends EventDispatcher
+final class MailServiceEventDispatcher extends EventDispatcher
 {
     public function __construct(EventSubscriberInterface ...$eventSubscribers)
     {

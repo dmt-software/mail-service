@@ -7,7 +7,7 @@ namespace DMT\MailService\Event\Subscribers;
 use DMT\MailService\Model\EmailMessage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class HtmlToTextEventSubscriber implements EventSubscriberInterface
+final class HtmlToTextEventSubscriber implements EventSubscriberInterface
 {
     public function onSendMail(EmailMessage $message): void
     {
@@ -33,7 +33,7 @@ class HtmlToTextEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            EmailMessage::class => ['onSendMail', 0]
+            EmailMessage::class => ['onSendMail', 0],
         ];
     }
 }

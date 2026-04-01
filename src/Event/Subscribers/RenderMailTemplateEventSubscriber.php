@@ -5,23 +5,14 @@ declare(strict_types=1);
 namespace DMT\MailService\Event\Subscribers;
 
 use DMT\MailService\Exceptions\InvalidMessageException;
+use DMT\MailService\Model\EmailMessage;
 use DMT\MailService\Model\TemplatedMessage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Twig\Environment;
 use Twig\Error\Error;
 
-class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
+final readonly class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            TemplatedMessage::class => [
-                'listener' => 'renderTemplate',
-                'priority' => 50,
-            ]
-        ];
-    }
-
     public function __construct(private Environment $twig)
     {
     }
@@ -29,23 +20,27 @@ class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
     /**
      * @throws InvalidMessageException
      */
-    public function renderTemplate(TemplatedMessage $mail): void
+    public function renderTemplate(EmailMessage $message): void
     {
+        if (!$message instanceof TemplatedMessage) {
+            return;
+        }
+
         try {
-            $template = $this->twig->load($mail->template);
+            $template = $this->twig->load($message->template);
 
             if (!$template->hasBlock('html_part')) {
-                $mail->html = $template->render($mail->context);
+                $message->html = $template->render($message->context);
 
                 return;
             }
 
             if ($template->hasBlock('html_part')) {
-                $mail->html = $template->renderBlock('html_part', $mail->context);
+                $message->html = $template->renderBlock('html_part', $message->context);
             }
 
             if ($template->hasBlock('text_part')) {
-                $mail->text = $template->renderBlock('text_part', $mail->context);
+                $message->text = $template->renderBlock('text_part', $message->context);
             }
         } catch (Error $exception) {
             throw new InvalidMessageException(
@@ -53,5 +48,12 @@ class RenderMailTemplateEventSubscriber implements EventSubscriberInterface
                 previous: $exception
             );
         }
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            EmailMessage::class => ['renderTemplate', 50]
+        ];
     }
 }

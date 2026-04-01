@@ -26,7 +26,7 @@ final readonly class MailService
      */
     public function send(EmailMessage $emailMessage): void
     {
-        $this->eventDispatcher->dispatch($emailMessage);
+        $this->eventDispatcher->dispatch($emailMessage, EmailMessage::class);
 
         $this->adapter->send($emailMessage);
     }
