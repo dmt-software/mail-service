@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DMT\MailService;
 
+use DMT\DependencyInjection\ConfigurationInterface;
 use DMT\DependencyInjection\Container;
 use DMT\DependencyInjection\ServiceProviderInterface;
 use DMT\MailService\Adapters\MailAdapterInterface;
@@ -17,22 +18,17 @@ use Twig\Environment;
 
 class MailServiceProvider implements ServiceProviderInterface
 {
-    public function __construct(private ?string $mailerDSN = null)
-    {
-    }
-
     public function register(Container $container): void
     {
         $container->set(
             id: MailAdapterInterface::class,
             value: fn() => new SymfonyMailAdapter(
-                new Mailer(Transport::fromDsn($this->mailerDSN ?? 'null://null')),
+                new Mailer(
+                    Transport::fromDsn(
+                        $container->get(id: ConfigurationInterface::class)->get('mailer.dsn', 'null://null')
+                    ),
+                ),
             )
-        );
-
-        $container->set(
-            id: RenderMailTemplateEventSubscriber::class,
-            value: fn() => new RenderMailTemplateEventSubscriber($container->get(Environment::class))
         );
 
         $container->set(
@@ -45,10 +41,7 @@ class MailServiceProvider implements ServiceProviderInterface
 
         $container->set(
             id: MailService::class,
-            value: fn() => new MailService(
-                $container->get(MailAdapterInterface::class),
-                $container->get(MailServiceEventDispatcher::class),
-            )
+            value: fn() => $container->get(MailService::class)
         );
     }
 }
