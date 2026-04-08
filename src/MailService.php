@@ -10,7 +10,7 @@ use DMT\MailService\Exceptions\SendMessageException;
 use DMT\MailService\Model\EmailMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-final readonly class MailService
+final readonly class MailService implements MailServiceInterface
 {
     public function __construct(
         private MailAdapterInterface $adapter,

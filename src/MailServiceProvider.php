@@ -40,8 +40,8 @@ class MailServiceProvider implements ServiceProviderInterface
         );
 
         $container->set(
-            id: MailService::class,
-            value: fn() => $container->get(MailService::class)
+            id: MailServiceInterface::class,
+            value: fn(): MailServiceInterface => $container->get(MailService::class)
         );
     }
 }
