@@ -108,6 +108,5 @@ $message = new TemplatedMessage(
 $service->send($message); // template will be rendered
 ```
 
-If a template contains a block called **html_part**, that block will be rendered for the HTML part of the message. A 
-block called **text_part**, will be rendered as text part of the message. Both can be present at the same time. When 
-none of the blocks above are specified the whole template is rendered as HTML part.
+If a template contains a block called **html_part**, that block will be rendered for the HTML part of the message.  
+A block called **text_part**, will be rendered as text part of the message. When none of the blocks above are specified the whole template is rendered as HTML part.
