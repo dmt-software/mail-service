@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DMT\MailService;
 
-use DMT\DependencyInjection\ConfigurationInterface;
 use DMT\DependencyInjection\Container;
 use DMT\DependencyInjection\ServiceProviderInterface;
 use DMT\MailService\Adapters\MailAdapterInterface;
@@ -12,9 +11,6 @@ use DMT\MailService\Adapters\SymfonyMailAdapter;
 use DMT\MailService\Event\Subscribers\HtmlToTextEventSubscriber;
 use DMT\MailService\Event\MailServiceEventDispatcher;
 use DMT\MailService\Event\Subscribers\RenderMailTemplateEventSubscriber;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport;
-use Twig\Environment;
 
 class MailServiceProvider implements ServiceProviderInterface
 {
@@ -22,26 +18,29 @@ class MailServiceProvider implements ServiceProviderInterface
     {
         $container->set(
             id: MailAdapterInterface::class,
-            value: fn() => new SymfonyMailAdapter(
-                new Mailer(
-                    Transport::fromDsn(
-                        $container->get(id: ConfigurationInterface::class)->get('mailer.dsn', 'null://null')
-                    ),
-                ),
-            )
+            value: fn (): MailAdapterInterface => $container->get(SymfonyMailAdapter::class)
         );
 
         $container->set(
             id: MailServiceEventDispatcher::class,
-            value: fn() => new MailServiceEventDispatcher(
-                $container->get(HtmlToTextEventSubscriber::class),
-                $container->get(RenderMailTemplateEventSubscriber::class)
-            )
+            value: function () use ($container): MailServiceEventDispatcher {
+                $dispatcher = new MailServiceEventDispatcher(
+                    $container->get(HtmlToTextEventSubscriber::class),
+                );
+
+                if (class_exists('Twig\Environment')) {
+                    $dispatcher->addSubscriber(
+                        $container->get(RenderMailTemplateEventSubscriber::class),
+                    );
+                }
+
+                return $dispatcher;
+            }
         );
 
         $container->set(
-            id: MailServiceInterface::class,
-            value: fn(): MailServiceInterface => $container->get(
+            id: MailService::class,
+            value: fn(): MailService => $container->get(
                 MailService::class,
                 eventDispatcher: $container->get(MailServiceEventDispatcher::class)
             )

@@ -4,18 +4,27 @@ declare(strict_types=1);
 
 namespace DMT\MailService\Adapters;
 
+use DMT\DependencyInjection\Attributes\ConfigValue;
 use DMT\MailService\Exceptions\InvalidMessageException;
 use DMT\MailService\Exceptions\SendMessageException;
 use DMT\MailService\Model\EmailMessage;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
 
 final readonly class SymfonyMailAdapter implements MailAdapterInterface
 {
-    public function __construct(private MailerInterface $mailer)
-    {
+    private MailerInterface $mailer;
+
+    public function __construct(
+        #[ConfigValue('mailer.dsn', 'null://null')]
+        ?string $dsn = null,
+        ?MailerInterface $mailer = null
+    ) {
+        $this->mailer = $mailer ?? new Mailer(Transport::fromDsn($dsn));
     }
 
     /**

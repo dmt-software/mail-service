@@ -22,7 +22,7 @@ final class SymfonyMailAdapterTest extends TestCase
         $this->expectExceptionMessage('Mail must contain at least one recipient.');
 
         $mailer = $this->createMock(MailerInterface::class);
-        $adapter = new SymfonyMailAdapter($mailer);
+        $adapter = new SymfonyMailAdapter(mailer: $mailer);
 
         $message = new EmailMessage(
             subject: 'Test subject',
@@ -40,7 +40,7 @@ final class SymfonyMailAdapterTest extends TestCase
         $this->expectExceptionMessage('Mail must contain either HTML or text content.');
 
         $mailer = $this->createMock(MailerInterface::class);
-        $adapter = new SymfonyMailAdapter($mailer);
+        $adapter = new SymfonyMailAdapter(mailer: $mailer);
 
         $message = new EmailMessage(
             subject: 'Test subject',
@@ -74,7 +74,7 @@ final class SymfonyMailAdapterTest extends TestCase
             replyTo: new EmailAddress('reply@example.com'),
         );
 
-        new SymfonyMailAdapter($mailer)->send($message);
+        new SymfonyMailAdapter(mailer: $mailer)->send($message);
     }
 
     public function testFailSendingEmail(): void
@@ -95,6 +95,6 @@ final class SymfonyMailAdapterTest extends TestCase
             to: new EmailAddress('user@example.com', 'User'),
         );
 
-        new SymfonyMailAdapter($mailer)->send($message);
+        new SymfonyMailAdapter(mailer: $mailer)->send($message);
     }
 }
