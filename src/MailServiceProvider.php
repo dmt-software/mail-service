@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DMT\MailService;
 
+use DMT\DependencyInjection\Attributes\ConfigValue;
 use DMT\DependencyInjection\Container;
 use DMT\DependencyInjection\ServiceProviderInterface;
 use DMT\MailService\Adapters\MailAdapterInterface;
@@ -14,11 +15,17 @@ use DMT\MailService\Event\Subscribers\RenderMailTemplateEventSubscriber;
 
 class MailServiceProvider implements ServiceProviderInterface
 {
+    public function __construct(
+        #[ConfigValue('mailer.mailAdapter', SymfonyMailAdapter::class)]
+        private string $mailAdapter = SymfonyMailAdapter::class
+    ) {
+    }
+
     public function register(Container $container): void
     {
         $container->set(
             id: MailAdapterInterface::class,
-            value: fn (): MailAdapterInterface => $container->get(SymfonyMailAdapter::class)
+            value: fn (): MailAdapterInterface => $container->get($this->mailAdapter),
         );
 
         $container->set(
